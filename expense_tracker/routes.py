@@ -238,7 +238,9 @@ def tracker():
             recieved_date = request.form.get("graphDate")
             date = datetime.datetime.strptime(recieved_date, "%Y-%m-%d")
             converted_date = date.strftime("%d %b %Y")
-            search_expenses = Expense.query.filter_by(user=current_user.id, date=converted_date).all()          
+            search_expenses = Expense.query.filter_by(user=current_user.id, date=converted_date).all()  
+
+            print(current_user.id)        
 
             search_expenses_list = []
 
@@ -271,19 +273,23 @@ def tracker():
             query = db.session.query(Expense).filter((Expense.time < dateTwoConverted) & (Expense.time > dateOneConverted)).all()
             query_list = []
             for each in query:
-                dict = {
-                    "id": each.id,
-                    "name": each.name,
-                    "category": each.category,
-                    "amount": each.amount,
-                    "time": each.time.strftime("%H:%M"),
-                    "date": each.date,
-                    "user": each.user,
-                }
+                print(query)
+                if current_user.id == each.user:
+                    dict = {
+                            "id": each.id,
+                            "name": each.name,
+                            "category": each.category,
+                            "amount": each.amount,
+                            "time": each.time.strftime("%H:%M"),
+                            "date": each.date,
+                            "user": each.user,
+                        }
+        
+                    query_list.append(dict)                
 
-                query_list.append(dict)
-
-            length = len(query_list)
+                    length = len(query_list)
+                else:
+                    continue
 
             if length > 0:
                 return render_template("tracker.html", category_expenses=category_expenses_list, labels_category=labels_category, values_category=values_category, labels_date=labels_date, values_date=values_date, dateranges=query_list, daterange_length=length)
@@ -309,9 +315,11 @@ def budget():
         
     budgets, labels, expense_values, budget_values, total_expense, total_budget, total_difference = GetBudgets(current_user.id)
 
+    print("check", budgets, labels, expense_values, budget_values, total_expense, total_budget, total_difference)
+
     return render_template("budget.html", budgets=budgets, labels=labels, expense_values=expense_values, budget_values=budget_values, total_expense=total_expense, total_budget=total_budget, total_difference=total_difference)
 
-@app.route("/profile")
+@app.route("/profile/")
 def profile():
     user_details = GetProfileDetails(current_user.id)
     return render_template("profile.html", user=user_details)

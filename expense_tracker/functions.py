@@ -97,7 +97,7 @@ def SearchExpense(query: str, user: int):
     return length, result_list
 
 # GetBudgets gets all the budgets regarding category from the database
-def GetBudgets(user: int) -> list:
+def GetBudgets(user: int):
     labels = []
     budget_values = []
     expense_values = []
@@ -140,6 +140,8 @@ def GetBudgets(user: int) -> list:
         total_budget = sum(budget_values)
 
         total_difference = total_budget - total_expense
+
+        print("check", budget_list, labels, expense_values, budget_values, total_expense, total_budget, total_difference)
 
         return budget_list, labels, expense_values, budget_values, total_expense, total_budget, total_difference
     
